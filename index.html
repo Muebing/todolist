@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todolist Task Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap');
+        
+        :root {
+            --primary: #00f0ff;
+            --secondary: #ff00e4;
+            --dark: #0f172a;
+            --light: #f8fafc;
+        }
+        
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background-color: #0a0a15;
+            color: var(--light);
+            min-height: 100vh;
+            perspective: 1000px;
+        }
+        
+        .task-container {
+            transform-style: preserve-3d;
+            transform: rotateX(5deg);
+            box-shadow: 0 0 50px rgba(0, 240, 255, 0.2);
+        }
+        
+        .task-item {
+            transform-style: preserve-3d;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .task-item:hover {
+            transform: translateY(-5px) rotateX(5deg);
+            box-shadow: 0 10px 25px rgba(0, 240, 255, 0.3);
+        }
+        
+        .neon-text {
+            text-shadow: 0 0 5px var(--primary), 
+                         0 0 10px var(--primary), 
+                         0 0 20px var(--primary);
+        }
+        
+        .neon-border {
+            border: 2px solid var(--primary);
+            box-shadow: 0 0 10px var(--primary), 
+                        inset 0 0 10px var(--primary);
+        }
+        
+        .neon-button {
+            transition: all 0.3s ease;
+            text-shadow: 0 0 5px var(--primary);
+        }
+        
+        .neon-button:hover {
+            box-shadow: 0 0 15px var(--primary), 
+                        inset 0 0 10px var(--primary);
+            transform: translateY(-2px);
+        }
+        
+        .glow {
+            animation: glow 2s infinite alternate;
+        }
+        
+        @keyframes glow {
+            from {
+                box-shadow: 0 0 5px var(--primary), 
+                            inset 0 0 5px var(--primary);
+            }
+            to {
+                box-shadow: 0 0 20px var(--primary), 
+                            inset 0 0 10px var(--primary);
+            }
+        }
+        
+        .checkbox:checked {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .checkbox:checked ~ .checkmark {
+            display: block;
+        }
+        
+        .holographic-effect {
+            background: linear-gradient(135deg, 
+                          rgba(0, 240, 255, 0.1) 0%, 
+                          rgba(255, 0, 228, 0.1) 100%);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(0, 240, 255, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 15px rgba(0, 240, 255, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 240, 255, 0);
+            }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center p-4">
+    <div class="w-full max-w-md">
+        <!-- Header with 3D effect -->
+        <div class="text-center mb-8 transform rotate-x-5">
+            <h1 class="text-4xl font-bold neon-text mb-2">TASK<span class="text-white">OSPHERE</span></h1>
+            <p class="text-cyan-300">Your Todolist</p>
+            
+            <div class="relative mt-6">
+                <div class="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-lg blur opacity-75"></div>
+                <div class="relative h-1 bg-cyan-400 rounded-full"></div>
+            </div>
+        </div>
+        
+        <!-- Add Task Form -->
+        <div class="holographic-effect rounded-xl p-6 mb-8 task-container">
+            <div class="flex items-center mb-4">
+                <div class="w-10 h-10 gradient-bg rounded-full flex items-center justify-center mr-3 pulse">
+                    <i class="fas fa-plus text-white"></i>
+                </div>
+                <h2 class="text-xl font-bold neon-text">New Task</h2>
+            </div>
+            
+            <form id="task-form" class="space-y-4">
+                <div>
+                    <input type="text" id="task-input" 
+                           class="w-full px-4 py-3 bg-gray-900 bg-opacity-50 border border-cyan-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent placeholder-gray-500"
+                           placeholder="Enter your task..." required>
+                </div>
+                <button type="submit" 
+                        class="w-full neon-button bg-gray-900 bg-opacity-70 neon-border py-3 px-6 rounded-lg font-medium flex items-center justify-center">
+                    <i class="fas fa-rocket mr-2"></i> Launch List
+                </button>
+            </form>
+        </div>
+        
+        <!-- Task List -->
+        <div class="holographic-effect rounded-xl p-6 task-container">
+            <div class="flex items-center mb-6">
+                <div class="w-10 h-10 gradient-bg rounded-full flex items-center justify-center mr-3 glow">
+                    <i class="fas fa-tasks text-white"></i>
+                </div>
+                <h2 class="text-xl font-bold neon-text">My List</h2>
+                <span id="task-count" class="ml-auto px-3 py-1 bg-cyan-500 bg-opacity-20 text-cyan-400 rounded-full text-sm">0 tasks</span>
+            </div>
+            
+            <div id="task-list" class="space-y-3">
+                <!-- Tasks will be added here dynamically -->
+                <div class="text-center py-8 text-gray-500" id="empty-state">
+                    <i class="fas fa-meteor text-4xl mb-3"></i>
+                    <p>No tasks in orbit yet</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Floating elements for 3D effect -->
+        <div class="fixed top-0 left-0 w-full h-full pointer-events-none -z-10">
+            <div class="absolute top-1/4 left-1/4 w-8 h-8 rounded-full bg-cyan-500 opacity-20 blur-xl"></div>
+            <div class="absolute bottom-1/3 right-1/4 w-12 h-12 rounded-full bg-purple-500 opacity-20 blur-xl"></div>
+            <div class="absolute top-2/3 left-2/3 w-6 h-6 rounded-full bg-cyan-400 opacity-30 blur-lg"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const taskForm = document.getElementById('task-form');
+            const taskInput = document.getElementById('task-input');
+            const taskList = document.getElementById('task-list');
+            const emptyState = document.getElementById('empty-state');
+            const taskCount = document.getElementById('task-count');
+            
+            let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+            
+            // Render tasks from localStorage
+            renderTasks();
+            
+            // Add new task
+            taskForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const taskText = taskInput.value.trim();
+                if (taskText) {
+                    addTask(taskText);
+                    taskInput.value = '';
+                    taskInput.focus();
+                }
+            });
+            
+            function addTask(text) {
+                const task = {
+                    id: Date.now(),
+                    text: text,
+                    completed: false
+                };
+                
+                tasks.push(task);
+                saveTasks();
+                renderTasks();
+            }
+            
+            function renderTasks() {
+                // Clear task list
+                taskList.innerHTML = '';
+                
+                if (tasks.length === 0) {
+                    emptyState.style.display = 'block';
+                    taskCount.textContent = '0 tasks';
+                    return;
+                }
+                
+                emptyState.style.display = 'none';
+                taskCount.textContent = `${tasks.length} ${tasks.length === 1 ? 'task' : 'tasks'}`;
+                
+                // Render each task
+                tasks.forEach(task => {
+                    const taskElement = document.createElement('div');
+                    taskElement.className = 'task-item holographic-effect rounded-lg p-4 flex items-center';
+                    
+                    taskElement.innerHTML = `
+                        <label class="flex items-center cursor-pointer w-full">
+                            <div class="relative">
+                                <input type="checkbox" ${task.completed ? 'checked' : ''} 
+                                       class="checkbox opacity-0 absolute w-6 h-6 cursor-pointer">
+                                <div class="w-6 h-6 rounded border-2 border-cyan-400 flex items-center justify-center">
+                                    ${task.completed ? '<i class="fas fa-check text-cyan-400 text-xs checkmark"></i>' : ''}
+                                </div>
+                            </div>
+                            <span class="ml-3 ${task.completed ? 'line-through text-gray-500' : 'text-white'}">${task.text}</span>
+                            <button class="ml-auto delete-btn text-gray-500 hover:text-red-400 transition-colors">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </label>
+                    `;
+                    
+                    taskList.appendChild(taskElement);
+                    
+                    // Add event listeners for the new elements
+                    const checkbox = taskElement.querySelector('.checkbox');
+                    const deleteBtn = taskElement.querySelector('.delete-btn');
+                    
+                    checkbox.addEventListener('change', () => {
+                        task.completed = checkbox.checked;
+                        saveTasks();
+                        renderTasks();
+                    });
+                    
+                    deleteBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        tasks = tasks.filter(t => t.id !== task.id);
+                        saveTasks();
+                        renderTasks();
+                    });
+                });
+            }
+            
+            function saveTasks() {
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+            }
+            
+            // 3D hover effects
+            document.querySelectorAll('.task-item').forEach(item => {
+                item.addEventListener('mousemove', (e) => {
+                    const x = e.offsetX;
+                    const y = e.offsetY;
+                    const centerX = item.offsetWidth / 2;
+                    const centerY = item.offsetHeight / 2;
+                    
+                    const angleX = (y - centerY) / 20;
+                    const angleY = (centerX - x) / 20;
+                    
+                    item.style.transform = `rotateX(${angleX}deg) rotateY(${angleY}deg)`;
+                });
+                
+                item.addEventListener('mouseleave', () => {
+                    item.style.transform = 'rotateX(0) rotateY(0)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
